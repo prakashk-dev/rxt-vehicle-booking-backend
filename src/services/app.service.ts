@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Vehicle, VehicleSearchRequestDto } from '../schema/vehicle.shema';
-import { vehicles } from '../schema/vehicles-mock';
+import { vehicles as mockVehicles } from '../schema/vehicles-mock';
 
 @Injectable()
 export class AppService {
+  // this returns mock vehicles, but in a real app it would return vehicles from a database
+  private vehicles = mockVehicles;
+
   getCarMakeAndModels(): Record<string, string[]> {
     const vehicleMakeToModels: Record<string, string[]> = {};
-    vehicles.forEach((vehicle) => {
+    this.vehicles.forEach((vehicle) => {
       if (vehicleMakeToModels[vehicle.make]) {
         if (vehicleMakeToModels[vehicle.make].includes(vehicle.model)) return;
         vehicleMakeToModels[vehicle.make].push(vehicle.model);
@@ -21,33 +24,31 @@ export class AppService {
     const { make, model, minPrice, maxPrice, startDate, endDate } =
       vehicleRequestDto;
 
-    const availableCars = vehicles.filter((vehicle) => {
-      const {
-        make: vehicleMake,
-        model: vehicleModel,
-        price,
-        bookings,
-      } = vehicle;
-      const filterByMake = make ? vehicleMake === make : true;
-      const filterByModel = model ? vehicleModel === model : true;
-      const filterByMinPrice = minPrice ? price >= minPrice : true;
-      const filterByMaxPrice = maxPrice ? price <= maxPrice : true;
-      const filterByDate = bookings
-        ? bookings.some(
+    const matchesMake = (vehicle: Vehicle) =>
+      make ? vehicle.make === make : true;
+    const matchesModel = (vehicle: Vehicle) =>
+      model ? vehicle.model === model : true;
+    const aboveMinPrice = (vehicle: Vehicle) =>
+      minPrice ? vehicle.price >= minPrice : true;
+    const belowMaxPrice = (vehicle: Vehicle) =>
+      maxPrice ? vehicle.price <= maxPrice : true;
+    const isAvailableDuringDates = (vehicle: Vehicle) =>
+      vehicle.bookings
+        ? vehicle.bookings.every(
             (booking) =>
-              // if a vehicle is returned on the same day as the start date, it is ignored
               startDate > booking.endDate || endDate < booking.startDate,
           )
         : true;
-      return (
-        filterByMake &&
-        filterByModel &&
-        filterByMinPrice &&
-        filterByMaxPrice &&
-        filterByDate
-      );
-    });
 
-    return availableCars;
+    const isVehicleAvailable = (vehicle: Vehicle) =>
+      matchesMake(vehicle) &&
+      matchesModel(vehicle) &&
+      aboveMinPrice(vehicle) &&
+      belowMaxPrice(vehicle) &&
+      isAvailableDuringDates(vehicle);
+
+    return this.vehicles
+      .filter(isVehicleAvailable)
+      .map(({ make, model, vin, price }) => ({ make, model, vin, price }));
   }
 }
