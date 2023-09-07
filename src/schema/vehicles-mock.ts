@@ -19,6 +19,13 @@ export const vehicles: Vehicle[] = [
     model: 'Passat',
     vin: 'WBANV9C51AC203320',
     price: '1731',
+    bookings: [
+      {
+        startDate: new Date('2023-09-20'),
+        endDate: new Date('2023-09-25'),
+        customerId: '234',
+      },
+    ],
   },
   {
     make: 'Saturn',

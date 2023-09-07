@@ -5,7 +5,7 @@ export interface Vehicle {
   make: string;
   model: string;
   vin: string;
-  //   price is per year and in USD
+  //   price is per day and in USD
   price: string;
 
   bookings?: Booking[];

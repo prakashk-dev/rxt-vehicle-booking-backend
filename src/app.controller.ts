@@ -1,7 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { AppService } from './app.service';
+import { VechicleSearchRequestPipe } from './pipes/vechicle-search-request.pipe';
 import { Vehicle, VehicleSearchRequestDto } from './schema/vehicle.shema';
-import { VechicleSearchRequestPipe } from './pipes/vechicle-search-request/vechicle-search-request.pipe';
+import { AppService } from './services/app.service';
 
 @Controller()
 export class AppController {

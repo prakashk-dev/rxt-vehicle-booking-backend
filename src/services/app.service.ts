@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Vehicle, VehicleSearchRequestDto } from './schema/vehicle.shema';
-import { vehicles } from './schema/vehicles-mock';
+import { Vehicle, VehicleSearchRequestDto } from '../schema/vehicle.shema';
+import { vehicles } from '../schema/vehicles-mock';
 
 @Injectable()
 export class AppService {
@@ -39,7 +39,6 @@ export class AppService {
               startDate > booking.endDate || endDate < booking.startDate,
           )
         : true;
-
       return (
         filterByMake &&
         filterByModel &&
